@@ -43,6 +43,258 @@
 .steam-overlay #steamPath2{stroke:#a58b75;stroke-width:1;opacity:.38;animation-delay:-1.7s;animation-duration:5.4s}
 .steam-overlay #steamPath3{stroke:#6f5b4b;stroke-width:.85;opacity:.32;animation-delay:-3s;animation-duration:5.1s}
 @keyframes steam-waver{0%,100%{transform:translateX(-1px) scaleX(.98);opacity:.18}45%{transform:translateX(1.5px) scaleX(1.02);opacity:.55}75%{transform:translateX(-.5px) scaleX(1);opacity:.32}}
+
+/* Compact, square calendar layout: keep the month view inside the available page width */
+html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+body { min-height: 100vh; padding: 12px; background: var(--page-bg); }
+.app { width: 100%; max-width: 1240px; }
+.layout {
+  grid-template-columns: minmax(0, 1.72fr) minmax(245px, .82fr);
+  gap: 12px;
+  align-items: stretch;
+}
+.panel { padding: 14px; border-radius: 17px; }
+.calhead { margin-bottom: 10px; }
+.month { font-size: clamp(20px, 2vw, 26px); }
+.weekdays, .days { gap: 4px; }
+.weekdays div { padding: 5px 0; font-size: 9px; }
+.day {
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  height: auto;
+  padding: 4px 4px 36px;
+  border-radius: 10px;
+  gap: 2px;
+}
+.num { width: 19px; height: 19px; font-size: 10px; }
+.dot { font-size: 8px; line-height: 1.1; padding: 2px 3px; border-radius: 4px; }
+.more { font-size: 8px; }
+.character-scene { height: 34px; bottom: 2px; }
+.character-scene svg { width: min(100%, 48px); height: 100%; }
+.agenda h2 { font-size: 22px; }
+.agenda-heading { margin-bottom: 12px; }
+.event { padding: 9px; gap: 8px; }
+body::after { content: ""; display: block; height: 0; }
+@media (min-width: 741px) {
+  .app { max-width: min(1240px, 100%); }
+  .layout { grid-template-columns: minmax(0, 1.72fr) minmax(245px, .82fr); }
+}
+@media (max-width: 900px) and (min-width: 741px) {
+  body { padding: 8px; }
+  .layout { grid-template-columns: minmax(0, 1.55fr) minmax(220px, .9fr); gap: 8px; }
+  .panel { padding: 10px; }
+  .day { padding-bottom: 31px; }
+  .character-scene { height: 29px; }
+  .character-scene svg { width: min(100%, 40px); }
+  .dot { font-size: 7px; }
+}
+@media (max-width: 740px) {
+  body { padding: 8px 6px 16px; }
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .panel { padding: 10px; }
+  .day { aspect-ratio: 1 / 1; min-height: 0; padding: 3px 2px 25px; border-radius: 8px; }
+  .num { width: 17px; height: 17px; font-size: 9px; }
+  .character-scene { height: 23px; bottom: 1px; }
+  .character-scene svg { width: min(100%, 32px); }
+  .weekdays, .days { gap: 3px; }
+  .weekdays div { padding: 4px 0; font-size: 8px; letter-spacing: 0; }
+  .dot { font-size: 7px; padding: 1px 2px; }
+  .more { font-size: 7px; }
+  .calhead { gap: 5px; }
+  .coffee-mug { width: 38px; height: 38px; flex-basis: 38px; }
+  .month { font-size: 20px; }
+  .iconbtn { width: 32px; height: 32px; }
+}
+@media (max-width: 390px) {
+  .panel { padding: 8px; }
+  .day { padding-bottom: 21px; }
+  .character-scene { height: 19px; }
+  .character-scene svg { width: min(100%, 27px); }
+  .num { width: 15px; height: 15px; font-size: 8px; }
+}
+
+
+/* Final layout correction: centred dashboard, roomy background, readable calendar */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+body {
+  min-height: 100vh;
+  min-height: 100svh;
+  box-sizing: border-box;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--page-bg);
+}
+.app {
+  width: min(100%, 980px);
+  max-width: 980px;
+  margin: auto;
+}
+.top { margin-bottom: 10px; }
+.layout {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.72fr) minmax(260px, .88fr);
+  gap: 14px;
+  align-items: stretch;
+}
+.panel {
+  min-width: 0;
+  padding: 15px;
+  border-radius: 19px;
+}
+.calhead, .agendahead { margin-bottom: 10px; }
+.month { font-size: 26px; }
+.weekdays, .days { gap: 5px; }
+.weekdays div {
+  padding: 4px 0 6px;
+  font-size: 10px;
+}
+.day {
+  aspect-ratio: 1 / 1;
+  height: auto;
+  min-height: 0;
+  padding: 5px 5px 47px;
+  border-radius: 12px;
+  gap: 3px;
+}
+.num {
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+}
+.dot { font-size: 9px; line-height: 1.15; padding: 3px 4px; }
+.more { font-size: 9px; }
+.character-scene {
+  height: 61px;
+  bottom: 1px;
+  left: 0;
+  right: 0;
+}
+.character-scene svg { height: 100%; width: min(100%, 92px); }
+.agenda h2 { font-size: 24px; }
+.agenda-heading { margin-bottom: 13px; }
+.agenda-tools { margin-bottom: 12px; }
+.event { padding: 10px; }
+
+/* Fit the whole dashboard on typical laptop screens without shrinking the art or numbers */
+@media (min-width: 741px) {
+  body { padding: 14px 20px; }
+  .app { width: min(100%, 960px); max-width: 960px; }
+  .layout { grid-template-columns: minmax(0, 1.7fr) minmax(255px, .88fr); gap: 13px; }
+  .panel { padding: 13px; }
+  .calhead, .agendahead { margin-bottom: 8px; }
+  .weekdays, .days { gap: 4px; }
+  .weekdays div { padding: 3px 0 5px; }
+  .day { padding: 4px 4px 44px; }
+  .character-scene { height: 58px; }
+}
+@media (min-width: 741px) and (max-height: 760px) {
+  body { padding-top: 8px; padding-bottom: 8px; }
+  .top { margin-bottom: 6px; }
+  .panel { padding: 11px; }
+  .calhead, .agendahead { margin-bottom: 6px; }
+  .month { font-size: 24px; }
+  .weekdays div { padding: 2px 0 4px; }
+  .day { padding-bottom: 39px; }
+  .character-scene { height: 54px; }
+}
+@media (max-width: 740px) {
+  body {
+    display: block;
+    min-height: 100vh;
+    padding: 12px 8px 20px;
+  }
+  .app { width: 100%; max-width: 560px; margin: 0 auto; }
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .panel { padding: 12px; }
+  .day { padding: 4px 3px 34px; aspect-ratio: 1 / 1; }
+  .num { width: 21px; height: 21px; font-size: 11px; }
+  .character-scene { height: 42px; }
+  .character-scene svg { width: min(100%, 70px); }
+  .weekdays, .days { gap: 4px; }
+  .weekdays div { font-size: 9px; padding: 4px 0; }
+}
+@media (max-width: 390px) {
+  .panel { padding: 8px; }
+  .day { padding-bottom: 29px; }
+  .num { width: 19px; height: 19px; font-size: 10px; }
+  .character-scene { height: 34px; }
+}
+
+
+/* Natural coffee vapour: anchored inside the coffee, broad and translucent, softly fading before the page edge. */
+.steam-overlay{position:fixed!important;top:12px!important;left:0;width:84px;height:0;overflow:visible;pointer-events:none;z-index:8;opacity:.9}
+.steam-overlay path{fill:none;stroke:#eadfd2;stroke-width:4.4;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;transform-box:fill-box;transform-origin:50% 100%;filter:blur(1.15px);animation:steam-natural 5.2s ease-in-out infinite;opacity:.28}
+.steam-overlay #steamPath1{stroke:#f5eee5;stroke-width:4.8;opacity:.31}
+.steam-overlay #steamPath2{stroke:#cbb9a7;stroke-width:3.7;opacity:.25;animation-delay:-1.8s;animation-duration:5.8s}
+.steam-overlay #steamPath3{stroke:#e8d8c7;stroke-width:3.2;opacity:.24;animation-delay:-3s;animation-duration:5.5s}
+@keyframes steam-natural{0%,100%{transform:translateX(-1.5px) scaleX(.96);opacity:.14}25%{transform:translateX(1px) scaleX(1.02);opacity:.31}55%{transform:translateX(2px) scaleX(1.06);opacity:.38}78%{transform:translateX(-1px) scaleX(1);opacity:.22}}
+
+
+
+/* Final, consistent browser layout and coffee-vapour fix */
+html, body { width:100%; max-width:100%; min-height:100%; overflow-x:hidden; }
+body { margin:0; padding:18px 14px 14px; }
+.app { width:100%; max-width:1240px; margin:0 auto; }
+.layout { grid-template-columns:minmax(0,1.72fr) minmax(245px,.82fr); gap:12px; align-items:stretch; }
+.panel { padding:58px 14px 12px; border-radius:17px; }
+.calhead { margin-bottom:8px; }
+.month { font-size:clamp(20px,2vw,26px); }
+.weekdays,.days { gap:4px; }
+.weekdays div { padding:4px 0; font-size:9px; }
+.day { aspect-ratio:auto; height:clamp(58px,8.8vh,72px); min-height:0; padding:4px 4px 30px; border-radius:10px; gap:2px; }
+.num { width:19px; height:19px; font-size:10px; }
+.dot { font-size:8px; line-height:1.1; padding:2px 3px; }
+.character-scene { height:29px; }
+.character-scene svg { width:min(100%,48px); }
+.agenda.panel { padding:14px; }
+/* This overlay is intentionally viewport-positioned, but its coordinates and height are recalculated from the mug. */
+.steam-overlay { position:fixed!important; top:12px!important; left:0; width:84px; height:0; overflow:visible; pointer-events:none; z-index:8; opacity:.9; }
+.steam-overlay path { fill:none; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; transform-box:fill-box; transform-origin:50% 100%; filter:blur(.7px); animation:steam-natural 4.8s ease-in-out infinite; }
+.steam-overlay #steamPath1 { stroke:#f5eee5; stroke-width:5.2; opacity:.38; }
+.steam-overlay #steamPath2 { stroke:#cbb9a7; stroke-width:4.2; opacity:.30; animation-delay:-1.6s; animation-duration:5.4s; }
+.steam-overlay #steamPath3 { stroke:#e8d8c7; stroke-width:3.4; opacity:.30; animation-delay:-2.8s; animation-duration:5.1s; }
+@keyframes steam-natural { 0%,100% { transform:translateX(-1px) scaleX(.96); opacity:.18 } 28% { transform:translateX(1px) scaleX(1.02); opacity:.38 } 55% { transform:translateX(2px) scaleX(1.06); opacity:.46 } 78% { transform:translateX(-1px) scaleX(1); opacity:.25 } }
+@media (max-height:700px) and (min-width:741px) {
+  body { padding-top:12px; padding-bottom:8px; }
+  .panel { padding-top:52px; padding-bottom:8px; }
+  .day { height:clamp(52px,8.3vh,62px); padding-bottom:25px; }
+  .character-scene { height:24px; }
+}
+@media (max-width:900px) and (min-width:741px) {
+  body { padding:12px 8px; }
+  .layout { grid-template-columns:minmax(0,1.55fr) minmax(220px,.9fr); gap:8px; }
+  .panel { padding:54px 10px 10px; }
+  .agenda.panel { padding:12px; }
+  .day { height:clamp(52px,8.5vh,68px); }
+}
+@media (max-width:740px) {
+  body { padding:14px 6px 16px; }
+  .layout { grid-template-columns:minmax(0,1fr); gap:10px; }
+  .panel { padding:56px 10px 10px; }
+  .agenda.panel { padding:12px; }
+  .day { height:auto; aspect-ratio:1/1; min-height:0; padding:3px 2px 24px; }
+  .character-scene { height:22px; }
+  .character-scene svg { width:min(100%,32px); }
+  .weekdays,.days { gap:3px; }
+  .weekdays div { padding:4px 0; font-size:8px; }
+  .dot { font-size:7px; padding:1px 2px; }
+  .month { font-size:20px; }
+}
+@media (max-width:390px) {
+  .panel { padding-left:8px; padding-right:8px; }
+  .day { padding-bottom:21px; }
+  .character-scene { height:19px; }
+  .num { width:15px; height:15px; font-size:8px; }
+}
+
 </style></head>
 <body><div class="leaf-layer" aria-hidden="true"><i class="leaf" style="--x:7%;--delay:-3s;--duration:19s;--rot:24deg;--leaf-color:#b66b4d"></i><i class="leaf" style="--x:19%;--delay:-12s;--duration:23s;--rot:70deg;--leaf-color:#c98b61"></i><i class="leaf" style="--x:32%;--delay:-7s;--duration:21s;--rot:12deg;--leaf-color:#9d704b"></i><i class="leaf" style="--x:46%;--delay:-16s;--duration:25s;--rot:45deg;--leaf-color:#c77d62"></i><i class="leaf" style="--x:61%;--delay:-5s;--duration:20s;--rot:80deg;--leaf-color:#b66b4d"></i><i class="leaf" style="--x:73%;--delay:-10s;--duration:24s;--rot:30deg;--leaf-color:#c98b61"></i><i class="leaf" style="--x:87%;--delay:-14s;--duration:22s;--rot:58deg;--leaf-color:#9d704b"></i><i class="leaf" style="--x:95%;--delay:-8s;--duration:26s;--rot:5deg;--leaf-color:#c77d62"></i></div><svg id="steamOverlay" class="steam-overlay" aria-hidden="true" viewBox="0 0 84 100" preserveAspectRatio="none">
 <path class="steam-core" id="steamPath1" d="M38 100 C24 82 57 72 39 53 S29 24 42 0"/>
@@ -149,17 +401,34 @@ function sceneMarkup(d){if(!same(d,today)||character.type==='none')return '';let
 function updateSteam(){
  const mug=$('coffeeMug'),svg=$('steamOverlay');if(!mug||!svg)return;
  const r=mug.getBoundingClientRect();
- const h=Math.max(0,Math.min(window.innerHeight-28,r.top+r.height*.30-12));
- if(r.bottom<0||r.top>window.innerHeight||h<8){svg.style.opacity='0';return}
- svg.style.opacity='.66';const width=84;
- svg.style.left=(r.left+r.width/2-width/2)+'px';svg.style.width=width+'px';svg.style.height=h+'px';svg.setAttribute('viewBox',`0 0 ${width} ${h}`);
- const buildWisp=(base,amp,phase)=>{let d=`M ${base} ${h}`,y=h,i=0,step=Math.max(16,Math.min(27,h/13));while(y>0){const next=Math.max(0,y-step),mid=(y+next)/2,sway=Math.sin((i+phase)*1.22)*amp,sway2=Math.sin((i+phase+.65)*1.18)*amp;d+=` C ${base+sway} ${y-step*.30}, ${base+sway2} ${mid+step*.12}, ${base+Math.sin((i+phase+1)*1.05)*amp*.7} ${next}`;y=next;i++}return d};
- [['steamPath1',38,5,0],['steamPath2',43,6,1.6],['steamPath3',47,4.5,2.5]].forEach(([id,x,a,p])=>$(id).setAttribute('d',buildWisp(x,a,p)));
+ // Keep the steam attached to the opening of the mug, even when the layout resizes.
+ const steamBase=r.top+r.height*(23/72);
+ const topInset=20;
+ const h=Math.max(0,Math.min(window.innerHeight-12,steamBase-12));
+ if(r.bottom<0||r.top>window.innerHeight||h<topInset+12){svg.style.opacity='0';return}
+ const width=84;
+ svg.style.left=(r.left+r.width/2-width/2)+'px';
+ svg.style.top='12px';svg.style.width=width+'px';svg.style.height=h+'px';
+ svg.setAttribute('viewBox',`0 0 ${width} ${h}`);
+ // Three softly irregular, tapered wisps start at the coffee surface and dissolve upward.
+ const buildWisp=(base,amp,phase)=>{
+   let d=`M ${base} ${h}`,y=h,i=0,step=Math.max(10,Math.min(18,(h-topInset)/11));
+   while(y>topInset){
+     const next=Math.max(topInset,y-step),mid=(y+next)/2;
+     const sway=Math.sin((i+phase)*1.12)*amp;
+     const sway2=Math.sin((i+phase+.7)*1.05)*amp;
+     d+=` C ${base+sway} ${y-step*.32}, ${base+sway2} ${mid+step*.15}, ${base+Math.sin((i+phase+1)*.9)*amp*.72} ${next}`;
+     y=next;i++;
+   }
+   return d;
+ };
+ [['steamPath1',38,8,0],['steamPath2',43,10,1.6],['steamPath3',47,7,2.5]].forEach(([id,x,a,ph])=>$(id).setAttribute('d',buildWisp(x,a,ph)));
 }
 function render(){ $('monthTitle').textContent=month.toLocaleDateString(undefined,{month:'long',year:'numeric'});let first=new Date(month.getFullYear(),month.getMonth(),1),offset=(first.getDay()+6)%7,start=new Date(first);start.setDate(first.getDate()-offset);$('grid').innerHTML='';for(let i=0;i<42;i++){let d=new Date(start);d.setDate(start.getDate()+i);let b=document.createElement('button');b.type='button';b.className='day'+(d.getMonth()!==month.getMonth()?' outside':'')+(same(d,today)?' today':'')+(same(d,selected)?' selected':'');let es=dayEvents(d);b.innerHTML=`<span class="num">${d.getDate()}</span>`+es.slice(0,2).map(e=>`<span class="dot">${safe(e.title)}</span>`).join('')+(es.length>2?`<span class="more">+${es.length-2} more</span>`:'')+sceneMarkup(d);b.onclick=()=>{selected=d;month=new Date(d.getFullYear(),d.getMonth(),1);render()};$('grid').appendChild(b)}
 $('agendaTitle').textContent=same(selected,today)?'Today':selected.toLocaleDateString(undefined,{month:'short',day:'numeric'});$('agendaDate').textContent=pretty(selected);$('list').innerHTML='';let es=dayEvents(selected);if(!es.length){}else{$('emptyCustom').style.display='none'}es.forEach(e=>{let card=document.createElement('article');card.className='event';card.innerHTML=`<div class="bar"></div><div><p class="eventtitle">${safe(e.title)}</p><div class="time">${safe(e.start||'Any time')}${e.end?' – '+safe(e.end):''}</div>${e.notes?`<div class="notes">${safe(e.notes)}</div>`:''}</div><div><button class="mini" data-edit="${e.id}">Edit</button><button class="mini" data-del="${e.id}">×</button></div>`;$('list').appendChild(card)});$('list').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openEvent(events.find(e=>e.id===b.dataset.edit)));$('list').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('Delete this event from this browser?')){events=events.filter(e=>e.id!==b.dataset.del);save();render()}});applyCopy();$('emptyCustom').style.display=(!es.length&&(copy.emptyTitle||copy.emptyMessage))?'block':'none';updateSteam()}
 function save(){localStorage.setItem('cozyEvents',JSON.stringify(events))}function openEvent(e){$('eventForm').reset();$('eventId').value=e?.id||'';$('formTitle').textContent=e?'Edit event':'Add event';$('title').value=e?.title||'';$('date').value=e?.date||key(selected);$('start').value=e?.start||'10:00';$('end').value=e?.end||'11:00';$('notes').value=e?.notes||'';$('eventBackdrop').classList.add('open')}function closeEvent(){$('eventBackdrop').classList.remove('open')}
 function fillSettings(){$('characterChoice').value=character.type;$('accessoryChoice').value=character.accessories;$('animationChoice').value=character.motion;$('eyebrowText').value=copy.eyebrow;$('headingText').value=copy.heading;$('subtitleText').value=copy.subtitle;$('agendaLabelText').value=copy.agendaLabel;$('emptyTitleText').value=copy.emptyTitle;$('emptyMessageText').value=copy.emptyMessage;applyTheme()}
+window.addEventListener('resize',()=>{updateSteam()});
 $('prev').onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()-1,1);render()};$('next').onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()+1,1);render()};$('addBtn').onclick=()=>openEvent();$('cancel').onclick=()=>$('eventBackdrop').classList.remove('open');$('eventForm').onsubmit=e=>{e.preventDefault();let id=$('eventId').value||String(Date.now()),item={id,title:$('title').value.trim(),date:$('date').value,start:$('start').value,end:$('end').value,notes:$('notes').value.trim()};let i=events.findIndex(x=>x.id===id);if(i>=0)events[i]=item;else events.push(item);save();selected=parse(item.date);month=new Date(selected.getFullYear(),selected.getMonth(),1);$('eventBackdrop').classList.remove('open');render()};
 $('settingsBtn').onclick=()=>{$('settingsBackdrop').classList.add('open');fillSettings()};$('cancelSettings').onclick=()=>$('settingsBackdrop').classList.remove('open');$('settingsForm').onsubmit=e=>{e.preventDefault();theme={pageBg:$('pageBg').value,paper:$('paper').value,accent:$('accent').value,rust:$('rust').value,coffee:$('coffee').value};character={type:$('characterChoice').value,accessories:$('accessoryChoice').value,motion:$('animationChoice').value};localStorage.setItem('cozyCharacter',JSON.stringify(character));copy={eyebrow:$('eyebrowText').value.trim(),heading:$('headingText').value.trim(),subtitle:$('subtitleText').value.trim(),agendaLabel:$('agendaLabelText').value.trim(),emptyTitle:$('emptyTitleText').value.trim(),emptyMessage:$('emptyMessageText').value.trim()};localStorage.setItem('cozyTheme',JSON.stringify(theme));localStorage.setItem('cozyCopy',JSON.stringify(copy));applyTheme();applyCopy();$('settingsBackdrop').classList.remove('open');render()};
 function getCustomizationFromForm(){
