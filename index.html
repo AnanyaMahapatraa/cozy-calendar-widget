@@ -524,7 +524,7 @@ function ensureGoogleTokenClient(){
         googleAccessToken=response.access_token;
         googleTokenExpiresAt=Date.now()+(Number(response.expires_in||3600)*1000);
         setGoogleStatus('Connected to Google Calendar. Loading events…','connected');
-        try{await syncGoogleEvents();setGoogleStatus('Connected to Google Calendar. Your visible dates are synced.','connected');}
+        try{await syncGoogleEvents();await offerLocalEventImport();}
         catch(err){setGoogleStatus('Google Calendar connection worked, but syncing failed: '+err.message,'error');}
       },
       error_callback:error=>setGoogleStatus('Google sign-in was closed or blocked. Click Google Calendar to try again.','error')
@@ -588,11 +588,26 @@ async function syncGoogleEvents(){
     render();
   }finally{googleBusy=false;}
 }
+async function offerLocalEventImport(){
+  const localEvents=events.filter(e=>e.source!=='google');
+  if(!localEvents.length){setGoogleStatus('Connected to Google Calendar. Your visible dates are synced.','connected');return;}
+  const approved=confirm(`You have ${localEvents.length} event(s) saved only in this browser. Upload them to your Google Calendar too? Choose OK to copy them to Google Calendar, or Cancel to keep them only in this browser for now.`);
+  if(!approved){setGoogleStatus('Google Calendar synced. Your browser-only events were kept locally.','connected');return;}
+  setGoogleStatus('Copying your browser-only events to Google Calendar…','connected');
+  for(const item of localEvents){
+    const saved=await saveEventToGoogle(item,null);
+    events=events.filter(e=>e.id!==item.id);
+    events.push(saved);
+  }
+  save();
+  await syncGoogleEvents();
+  setGoogleStatus('Your browser-only events were copied to Google Calendar. Visible dates are synced.','connected');
+}
 async function connectOrSyncGoogle(){
   try{
     if(hasGoogleToken()){
       setGoogleStatus('Syncing events from Google Calendar…','connected');
-      await syncGoogleEvents();setGoogleStatus('Connected to Google Calendar. Your visible dates are synced.','connected');return;
+      await syncGoogleEvents();await offerLocalEventImport();return;
     }
     setGoogleStatus('Opening Google permission window…','disconnected');
     ensureGoogleTokenClient().requestAccessToken({prompt:'consent'});
@@ -616,7 +631,7 @@ $('agendaTitle').textContent=same(selected,today)?'Today':selected.toLocaleDateS
 function save(){localStorage.setItem('cozyEvents',JSON.stringify(events.filter(e=>e.source!=='google')))}function openEvent(e){$('eventForm').reset();$('eventId').value=e?.id||'';$('formTitle').textContent=e?'Edit event':'Add event';$('title').value=e?.title||'';$('date').value=e?.date||key(selected);$('start').value=e?.start||'10:00';$('end').value=e?.end||'11:00';$('notes').value=e?.notes||'';$('eventBackdrop').classList.add('open')}function closeEvent(){$('eventBackdrop').classList.remove('open')}
 function fillSettings(){$('characterChoice').value=character.type;$('accessoryChoice').value=character.accessories;$('animationChoice').value=character.motion;$('eyebrowText').value=copy.eyebrow;$('headingText').value=copy.heading;$('subtitleText').value=copy.subtitle;$('agendaLabelText').value=copy.agendaLabel;$('emptyTitleText').value=copy.emptyTitle;$('emptyMessageText').value=copy.emptyMessage;applyTheme()}
 window.addEventListener('resize',()=>{updateSteam()});
-$('googleConnectBtn').onclick=connectOrSyncGoogle;$('prev').onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()-1,1);render();if(hasGoogleToken())syncGoogleEvents().catch(err=>setGoogleStatus('Could not sync Google Calendar: '+err.message,'error'))};$('next').onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()+1,1);render();if(hasGoogleToken())syncGoogleEvents().catch(err=>setGoogleStatus('Could not sync Google Calendar: '+err.message,'error'))};$('addBtn').onclick=()=>openEvent();$('cancel').onclick=()=>$('eventBackdrop').classList.remove('open');$('eventForm').onsubmit=async e=>{e.preventDefault();const oldId=$('eventId').value;const existing=events.find(x=>x.id===oldId);const item={id:oldId||String(Date.now()),title:$('title').value.trim(),date:$('date').value,start:$('start').value,end:$('end').value,notes:$('notes').value.trim()};try{if(hasGoogleToken()){setGoogleStatus('Saving event to Google Calendar…','connected');const saved=await saveEventToGoogle(item,existing);events=events.filter(x=>x.id!==oldId);events.push(saved);setGoogleStatus('Event saved to Google Calendar.','connected')}else{const i=events.findIndex(x=>x.id===item.id);if(i>=0)events[i]=item;else events.push(item);save()}selected=parse(item.date);month=new Date(selected.getFullYear(),selected.getMonth(),1);$('eventBackdrop').classList.remove('open');render();if(hasGoogleToken())await syncGoogleEvents()}catch(err){setGoogleStatus('Could not save the event: '+err.message,'error')}};
+$('googleConnectBtn').onclick=connectOrSyncGoogle;$('prev').onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()-1,1);render();if(hasGoogleToken())syncGoogleEvents().catch(err=>setGoogleStatus('Could not sync Google Calendar: '+err.message,'error'))};$('next').onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()+1,1);render();if(hasGoogleToken())syncGoogleEvents().catch(err=>setGoogleStatus('Could not sync Google Calendar: '+err.message,'error'))};$('addBtn').onclick=()=>openEvent();$('cancel').onclick=()=>$('eventBackdrop').classList.remove('open');$('eventForm').onsubmit=async e=>{e.preventDefault();const oldId=$('eventId').value;const existing=events.find(x=>x.id===oldId);const item={id:oldId||String(Date.now()),title:$('title').value.trim(),date:$('date').value,start:$('start').value,end:$('end').value,notes:$('notes').value.trim()};try{if(hasGoogleToken()){setGoogleStatus('Saving event to Google Calendar…','connected');const saved=await saveEventToGoogle(item,existing);events=events.filter(x=>x.id!==oldId);events.push(saved);setGoogleStatus('Event saved to Google Calendar.','connected')}else{const i=events.findIndex(x=>x.id===item.id);if(i>=0)events[i]=item;else events.push(item);save();setGoogleStatus('Saved in this browser only. Click ＋ Google Calendar to reconnect and sync it.','error')}selected=parse(item.date);month=new Date(selected.getFullYear(),selected.getMonth(),1);$('eventBackdrop').classList.remove('open');render();if(hasGoogleToken())await syncGoogleEvents()}catch(err){setGoogleStatus('Could not save the event: '+err.message,'error')}};
 $('settingsBtn').onclick=()=>{$('settingsBackdrop').classList.add('open');fillSettings()};$('cancelSettings').onclick=()=>$('settingsBackdrop').classList.remove('open');$('settingsForm').onsubmit=e=>{e.preventDefault();theme={pageBg:$('pageBg').value,paper:$('paper').value,accent:$('accent').value,rust:$('rust').value,coffee:$('coffee').value};character={type:$('characterChoice').value,accessories:$('accessoryChoice').value,motion:$('animationChoice').value};localStorage.setItem('cozyCharacter',JSON.stringify(character));copy={eyebrow:$('eyebrowText').value.trim(),heading:$('headingText').value.trim(),subtitle:$('subtitleText').value.trim(),agendaLabel:$('agendaLabelText').value.trim(),emptyTitle:$('emptyTitleText').value.trim(),emptyMessage:$('emptyMessageText').value.trim()};localStorage.setItem('cozyTheme',JSON.stringify(theme));localStorage.setItem('cozyCopy',JSON.stringify(copy));applyTheme();applyCopy();$('settingsBackdrop').classList.remove('open');render()};
 function getCustomizationFromForm(){
   return {
