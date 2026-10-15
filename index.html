@@ -367,9 +367,7 @@ body {
 
 /* Google Calendar connection */
 .google-connect{white-space:nowrap}
-.google-status{font-size:11px;line-height:1.45;color:var(--muted);margin:-7px 0 13px;min-height:15px}.google-status[hidden]{display:none!important}.event-indicator{position:relative;z-index:2;display:inline-flex;align-items:center;align-self:flex-start;max-width:calc(100% - 4px);margin-top:1px;padding:2px 5px;border-radius:999px;background:#ead1c3;color:#633a2b;font-size:9px;line-height:1.2;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.character-scene{z-index:0}.num{position:relative;z-index:2}
-.google-status[data-state="connected"]{color:#52734d}
-.google-status[data-state="error"]{color:#9b4935}
+.google-status{position:fixed;top:18px;right:18px;z-index:10000;max-width:min(360px,calc(100vw - 36px));padding:11px 15px;border:1px solid var(--line);border-radius:12px;background:var(--paper);box-shadow:0 8px 28px rgba(35,22,14,.18);font-size:12px;line-height:1.45;color:var(--coffee);overflow-wrap:anywhere;animation:status-pop .18s ease-out}.google-status[hidden]{display:none!important}.google-status[data-state="connected"]{border-color:#a8b99b}.google-status[data-state="error"]{border-color:#d6a08e;color:#9b4935}@keyframes status-pop{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}.event-indicator{position:relative;z-index:2;display:inline-flex;align-items:center;align-self:flex-start;max-width:calc(100% - 4px);margin-top:1px;padding:2px 5px;border-radius:999px;background:#ead1c3;color:#633a2b;font-size:9px;line-height:1.2;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.character-scene{z-index:0}.num{position:relative;z-index:2}
 @media(max-width:390px){.google-connect{white-space:normal}.agenda-tools{flex-wrap:wrap}}
 </style></head>
 <body><div class="leaf-layer" aria-hidden="true"><i class="leaf" style="--x:7%;--delay:-3s;--duration:19s;--rot:24deg;--leaf-color:#b66b4d"></i><i class="leaf" style="--x:19%;--delay:-12s;--duration:23s;--rot:70deg;--leaf-color:#c98b61"></i><i class="leaf" style="--x:32%;--delay:-7s;--duration:21s;--rot:12deg;--leaf-color:#9d704b"></i><i class="leaf" style="--x:46%;--delay:-16s;--duration:25s;--rot:45deg;--leaf-color:#c77d62"></i><i class="leaf" style="--x:61%;--delay:-5s;--duration:20s;--rot:80deg;--leaf-color:#b66b4d"></i><i class="leaf" style="--x:73%;--delay:-10s;--duration:24s;--rot:30deg;--leaf-color:#c98b61"></i><i class="leaf" style="--x:87%;--delay:-14s;--duration:22s;--rot:58deg;--leaf-color:#9d704b"></i><i class="leaf" style="--x:95%;--delay:-8s;--duration:26s;--rot:5deg;--leaf-color:#c77d62"></i></div><svg id="steamOverlay" class="steam-overlay" aria-hidden="true" viewBox="0 0 84 100" preserveAspectRatio="none">
@@ -507,10 +505,13 @@ let googleAccessToken = null;
 let googleTokenClient = null;
 let googleTokenExpiresAt = 0;
 let googleBusy = false;
+let googleStatusTimer=null;
 function setGoogleStatus(message,state='disconnected'){
   const el=$('googleStatus'); if(!el)return;
+  if(googleStatusTimer)clearTimeout(googleStatusTimer);
   el.textContent=message; el.dataset.state=state; el.hidden=false;
   $('googleConnectBtn').textContent=state==='connected'?'↻ Google Calendar':'＋ Google Calendar';
+  googleStatusTimer=setTimeout(()=>{el.hidden=true;},4500);
 }
 function ensureGoogleTokenClient(){
   if(!window.google?.accounts?.oauth2) throw new Error('Google sign-in has not loaded yet. Please wait a few seconds and try again.');
